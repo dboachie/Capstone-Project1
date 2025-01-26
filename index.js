@@ -42,8 +42,8 @@ app.use((err, req, res, next) => {
 
 const init = async () => {
   try {
-    const { seed } = require('./db/seed');
-    await seed();
+    //const { seed } = require('./db/seed');
+    //await seed();
     
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {

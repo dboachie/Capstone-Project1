@@ -18,6 +18,7 @@ export const useAuth = () => {
             'Content-Type': 'application/json'
           }
         });
+        console.log("login with token response", response);
         if (response.ok) {
           const userData = await response.json();
           setAuth({ token, user: userData });
@@ -42,11 +43,11 @@ export const useAuth = () => {
         },
         body: JSON.stringify({ email, password }),
       });
-      
+
       if (!response.ok) {
         throw new Error(await response.text());
       }
-      
+
       const data = await response.json();
       window.localStorage.setItem('token', data);
       await attemptLoginWithToken();
@@ -67,6 +68,7 @@ export const useAuth = () => {
       });
 
       const data = await response.json();
+      console.log(data);
       if (!response.ok) {
         throw new Error(data.error || 'Registration failed');
       }

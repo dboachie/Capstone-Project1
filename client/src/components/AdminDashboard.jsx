@@ -1,24 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 export const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [pendingReviews, setPendingReviews] = useState([]);
-  const token = window.localStorage.getItem('token');
+  const token = window.localStorage.getItem("token");
 
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
-        
-        const statsResponse = await fetch('/api/admin/reviews/dashboard', { headers });
+
+        const statsResponse = await fetch("/api/admin/reviews/dashboard", {
+          headers,
+        });
         const statsData = await statsResponse.json();
         setStats(statsData);
 
-        const reviewsResponse = await fetch('/api/admin/reviews/pending', { headers });
+        const reviewsResponse = await fetch("/api/admin/reviews/pending", {
+          headers,
+        });
         const reviewsData = await reviewsResponse.json();
         setPendingReviews(reviewsData);
       } catch (error) {
-        console.error('Error fetching admin data:', error);
+        console.error("Error fetching admin data:", error);
       }
     };
 
@@ -27,32 +31,29 @@ export const AdminDashboard = () => {
 
   const handleReviewAction = async (reviewId, action) => {
     try {
-      await fetch(
-        `/api/admin/reviews/${reviewId}/status`,
-        {
-          method: 'PUT',
-          headers: { 
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}` 
-          },
-          body: JSON.stringify({ status: action })
-        }
-      );
-    
-      const response = await fetch('/api/admin/reviews/pending', {
-        headers: { Authorization: `Bearer ${token}` }
+      await fetch(`/api/admin/reviews/${reviewId}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: action }),
+      });
+
+      const response = await fetch("/api/admin/reviews/pending", {
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
       setPendingReviews(data);
     } catch (error) {
-      console.error('Error updating review:', error);
+      console.error("Error updating review:", error);
     }
   };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-      
+
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-white p-4 rounded shadow">
@@ -92,13 +93,17 @@ export const AdminDashboard = () => {
                   </div>
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => handleReviewAction(review.review_id, 'approved')}
+                      onClick={() =>
+                        handleReviewAction(review.review_id, "approved")
+                      }
                       className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
                     >
                       Approve
                     </button>
                     <button
-                      onClick={() => handleReviewAction(review.review_id, 'rejected')}
+                      onClick={() =>
+                        handleReviewAction(review.review_id, "rejected")
+                      }
                       className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                     >
                       Reject

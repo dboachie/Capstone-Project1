@@ -6,7 +6,7 @@ export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login, error: authError } = useAuth();
+  const { login, error: authError, auth } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (ev) => {
@@ -15,6 +15,8 @@ export const Login = () => {
 
     try {
       await login({ email, password });
+      console.log("logging in");
+      console.log(auth.user);
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
