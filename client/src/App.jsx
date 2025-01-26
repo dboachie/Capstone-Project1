@@ -20,7 +20,10 @@ const App = () => {
           <Routes>
             <Route path="/login" element={<Login login={login} />} />
             <Route path="/signup" element={<Register register={register} />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route
+              path="/dashboard"
+              element={auth.user ? <Dashboard /> : <Navigate to="/login" />}
+            />
             <Route
               path="/admin"
               element={isAdmin ? <AdminDashboard /> : <Navigate to="/" />}
