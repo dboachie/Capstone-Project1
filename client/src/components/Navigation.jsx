@@ -18,10 +18,7 @@ export const Navigation = ({ auth, isAdmin, logout, onSearch }) => {
             </button>
           </div>
 
-          {/* Search */}
-          <div className="flex-grow max-w-2xl">
-            <SearchBar onSearch={onSearch} />
-          </div>
+          
 
           {/* Auth Buttons */}
           <div className="flex-shrink-0">

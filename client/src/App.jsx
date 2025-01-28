@@ -9,16 +9,20 @@ import { Navigation } from "./components/Navigation";
 import { useAuth } from "./hooks/useAuth.js";
 
 const App = () => {
-  const { auth, login, register, logout, isAdmin } = useAuth();
+  const { auth, login, register, logout, isAdmin, error } = useAuth();
   //const token = window.localStorage.getItem("token");
-  console.log(auth);
+  console.log(isAdmin);
+
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-gray-100">
         <Navigation auth={auth} isAdmin={isAdmin} logout={logout} />
         <main className="pt-16">
           <Routes>
-            <Route path="/login" element={<Login login={login} />} />
+            <Route
+              path="/login"
+              element={<Login login={login} isAdmin={isAdmin} error={error} />}
+            />
             <Route path="/signup" element={<Register register={register} />} />
             <Route
               path="/dashboard"

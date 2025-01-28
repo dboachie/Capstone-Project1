@@ -9,6 +9,7 @@ export const Register = ({ register }) => {
 
   const handleSubmit = async (ev) => {
     ev.preventDefault();
+
     try {
       await register({ username, email, password, full_name: fullName });
     } catch (ex) {
