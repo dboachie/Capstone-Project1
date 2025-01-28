@@ -21,7 +21,7 @@ export const Login = ({ login, isAdmin, error }) => {
       await login({ email, password });
       console.log("logging in");
       //console.log(auth.user);
-      console.log(isAdmin);
+      console.log("loginAdmin", isAdmin);
       const path = isAdmin ? "/admin" : "/dashboard";
 
       navigate(path);
