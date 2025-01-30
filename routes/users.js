@@ -17,7 +17,7 @@ router.get('/profile', authenticateToken, async (req, res, next) => {
   }
 });
 
-router.get('/api/users/reviews', authenticateToken, async (req, res) => {
+router.get('/reviews', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT r.*, p.name as place_name 

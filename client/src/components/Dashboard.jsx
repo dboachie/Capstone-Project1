@@ -38,43 +38,33 @@ export const Dashboard = () => {
     fetchUserData();
   }, [token]);
 
-  // const deleteReview = (review) => {
+  async function deleteReview(id) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/reviews/${id}`, {
+        method: "DELETE",
+      });
+      const result = await response.json();
 
-  //   try{
+      console.log(result);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
 
-  //    // http://localhost:5173/api/reviews/review
+  // async function editReview(id, text, rating) {
+  //   try {
+  //     const response = await fetch(`http://localhost:3000/api/reviews/${id}`);
+  //     const result = await response.json();
 
+  //     //Logic to check if result was successful
+  //     body: JSON.stringify({
+  //       name,
+  //       breed,
+  //     }),
+  //   } catch (error) {
+  //     console.log(error.message);
   //   }
-
-  // };
-
-  async function deleteReview() {
-    try {
-      const response = await fetch("http://localhost:5173/api/reviews/review/");
-      const result = await response.json();
-
-      const deletedReview = review.review_id;
-      console.log(deletedReview);
-
-      setDeleteReview(deletedReview);
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
-
-  async function editReview() {
-    try {
-      const response = await fetch("http://localhost:5173/api/reviews/review/");
-      const result = await response.json();
-
-      const editedReview = review.review_id;
-      console.log(editedReview);
-
-      setEditedeview(editedReview);
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
+  // }
 
   // const editReview = (review) => {
   //   //  http://localhost:5173/api/reviews/review
