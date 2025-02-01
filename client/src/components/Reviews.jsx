@@ -1,16 +1,29 @@
 import React, { useState } from "react";
 
-function ReviewForm({ setReviewButtonClicked }) {
+function ReviewForm({ setReviewButtonClicked, token }) {
   const [name, setName] = useState("");
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
 
-  const handleSubmit = (e) => {
-
+  const handleSubmit = async (e) => {
     //Prevents page from refreshing
     e.preventDefault();
     // Handle submission logic here, e.g., send data to server
+
     console.log("Review submitted:", { name, rating, comment });
+    try {
+      const response = await fetch("http://localhost:3000/api/reviews", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name, rating, comment }),
+      });
+      console.log(response);
+    } catch {
+      throw new Error("An error");
+    }
     setReviewButtonClicked(false);
   };
 

@@ -3,10 +3,10 @@ const router = express.Router();
 const pool = require('../config/db');
 const { authenticateToken } = require('../middleware/auth');
 
-router.post('/:placeId/reviews', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   try {
     const { rating, title, content, visit_date } = req.body;
-    const { placeId } = req.params;
+    console.log(req.body)
 
     const result = await pool.query(
       `INSERT INTO reviews (user_id, place_id, rating, title, content, visit_date)
@@ -17,7 +17,7 @@ router.post('/:placeId/reviews', authenticateToken, async (req, res) => {
 
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    if (err.code === '23505') { 
+    if (err.code === '23505') {
       return res.status(400).json({ error: 'You have already reviewed this place' });
     }
     console.error(err);

@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 const App = () => {
   const { auth, login, register, logout, isAdmin, error } = useAuth();
   const navigate = useNavigate();
+  console.log(auth);
   //const token = window.localStorage.getItem("token");
   console.log(isAdmin);
 
@@ -33,7 +34,9 @@ const App = () => {
           <Route path="/signup" element={<Register register={register} />} />
           <Route
             path="/dashboard"
-            element={auth.user ? <Dashboard /> : <Navigate to="/login" />}
+            //element={auth.user ? <Dashboard /> : <Navigate to="/login" />}
+
+            element={<Dashboard/>}
           />
           <Route
             path="/admin"

@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { MapPin, Star, Heart, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import ReviewForm from "./Reviews";
 
 export const Dashboard = () => {
+  const [token, setToken] = useState(window.localStorage.getItem("token"));
+  console.log(token);
   const [reviewButtonClicked, setReviewButtonClicked] = useState(false);
   const [userData, setUserData] = useState(null);
   const [userReviews, setUserReviews] = useState([]);
   const [favoriteLocations, setFavoriteLocations] = useState([]);
-  const token = window.localStorage.getItem("token");
+
+  const navigate = useNavigate();
+
+  //If token does not exist, navigate the user to the login page.
+  useEffect(() => {
+    if (token === null) {
+      navigate("/login");
+    }
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -36,6 +47,7 @@ export const Dashboard = () => {
     };
 
     fetchUserData();
+    //dependancy array
   }, [token]);
 
   async function deleteReview(id) {
@@ -48,27 +60,24 @@ export const Dashboard = () => {
       console.log(result);
     } catch (error) {
       console.log(error.message);
+
+      //Find why token is not showing up
     }
   }
 
-  // async function editReview(id, text, rating) {
-  //   try {
-  //     const response = await fetch(`http://localhost:3000/api/reviews/${id}`);
-  //     const result = await response.json();
+  async function editReview(id, text, rating) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/reviews/${id}`, {
+        method: "PUT",
+      });
+      const result = await response.json();
+      console.log(result);
 
-  //     //Logic to check if result was successful
-  //     body: JSON.stringify({
-  //       name,
-  //       breed,
-  //     }),
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // }
-
-  // const editReview = (review) => {
-  //   //  http://localhost:5173/api/reviews/review
-  // };
+      //Logic to check if result was successful
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -108,7 +117,10 @@ export const Dashboard = () => {
             Review Form{" "}
           </button>
           {reviewButtonClicked ? (
-            <ReviewForm setReviewButtonClicked={setReviewButtonClicked} />
+            <ReviewForm
+              setReviewButtonClicked={setReviewButtonClicked}
+              token={token}
+            />
           ) : (
             <div></div>
           )}
