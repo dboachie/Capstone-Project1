@@ -9,10 +9,10 @@ router.post('/', authenticateToken, async (req, res, next) => {
     console.log(req.body)
 
     const result = await pool.query(
-      `INSERT INTO reviews (user_id, place_id, rating, title, content, visit_date)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO reviews (user_id, rating, title, content, visit_date)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [req.user.id, placeId, rating, title, content, visit_date]
+      [req.user.id, rating, title, content, visit_date]
     );
 
     res.status(201).json(result.rows[0]);

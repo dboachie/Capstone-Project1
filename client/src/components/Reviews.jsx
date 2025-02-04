@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 
 function ReviewForm({ setReviewButtonClicked, token }) {
-  const [name, setName] = useState("");
+  const [title, setTitle] = useState("");
   const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
+  const [content, setContent] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, title, rating, content) => {
     //Prevents page from refreshing
     e.preventDefault();
     // Handle submission logic here, e.g., send data to server
 
-    //console.log("Review submitted:", { name, rating, comment });
     console.log("Review submitted:", { title, rating, content });
     try {
       const response = await fetch("http://localhost:3000/api/reviews", {
@@ -19,7 +18,7 @@ function ReviewForm({ setReviewButtonClicked, token }) {
           "content-type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, rating, comment }),
+        body: JSON.stringify({ title, rating, content }),
       });
       console.log(response);
     } catch {
@@ -29,14 +28,14 @@ function ReviewForm({ setReviewButtonClicked, token }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={(e) => handleSubmit(e, title, rating, content)}>
       <div>
         <label htmlFor="name">Name:</label>
         <input
           type="text"
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          id="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
       </div>
       <div>
@@ -55,11 +54,11 @@ function ReviewForm({ setReviewButtonClicked, token }) {
         </select>
       </div>
       <div>
-        <label htmlFor="comment">Comment:</label>
+        <label htmlFor="content">Content:</label>
         <textarea
-          id="comment"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
+          id="content"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
         />
       </div>
       <button type="submit">Submit Review</button>

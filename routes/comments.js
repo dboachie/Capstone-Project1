@@ -5,7 +5,7 @@ const { authenticateToken } = require('../middleware/auth');
 
 
 router.get('/', authenticateToken, async (req, res) => {
-
+  console.log(req.user)
   try {
 
     const result = await pool.query(
@@ -14,7 +14,8 @@ router.get('/', authenticateToken, async (req, res) => {
     WHERE user_id = $1;`,
       [req.user.id]
     );
-    res.json(result.rows);
+    console.log(result.rows)
+    res.send(result.rows);
 
   }
   catch (err) {

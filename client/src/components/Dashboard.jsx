@@ -9,12 +9,13 @@ export const Dashboard = () => {
   const [reviewButtonClicked, setReviewButtonClicked] = useState(false);
   const [newReviewText, setNewReviewText] = useState("");
   const [newReviewRating, setNewReviewRating] = useState(null);
+  //const [newCommentText, setNewCommentText] = useState("");
   const [userData, setUserData] = useState(null);
   const [userReviews, setUserReviews] = useState([]);
   const [favoriteLocations, setFavoriteLocations] = useState([]);
   const [userComments, setUserComments] = useState([]);
   const [editReviewFormShown, setEditReviewFormShown] = useState(false);
-  const [submitUpdatedReview, setSubmitUpdatedReviewn] = useState(false);
+  const [submitUpdatedReview, setSubmitUpdatedReview] = useState(false);
   console.log(userComments);
   const navigate = useNavigate();
 
@@ -41,11 +42,12 @@ export const Dashboard = () => {
         setUserReviews(reviewsData);
 
         // Fetch user comments
-        const commentsResponse = await fetch("/api/users/comments", {
+        const commentsResponse = await fetch("/api/comments", {
           headers,
         });
         const commentsData = await commentsResponse.json();
-        setUserReviews(commentsData);
+        console.log(commentsData);
+        setUserComments(commentsData);
 
         // Fetch favorite locations
         const favoritesResponse = await fetch("/api/users/favorites", {
@@ -86,64 +88,14 @@ export const Dashboard = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({content, rating}),
+        body: JSON.stringify({ content, rating }),
       });
       const result = await response.json();
       console.log(result);
-
-      //Logic to check if result was successful
     } catch (error) {
       console.log(error.message);
     }
   }
-
-  // async function deleteReview(id) {
-  //   try {
-  //     await fetch(`/api/reviews/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
-  //     setUserReviews(userReviews.filter(review => review.review_id !== id));
-  //   } catch (error) {
-  //     console.error(error.message);
-  //   }
-  // }
-
-  // async function editReview(id, text, rating) {
-  //   try {
-  //     const response = await fetch(`/api/reviews/${id}`, {
-  //       method: "PUT",
-  //       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-  //       body: JSON.stringify({ text, rating })
-  //     });
-  //     if (response.ok) {
-  //       setUserReviews(userReviews.map(review => review.review_id === id ? { ...review, review_content: text, rating } : review));
-  //     }
-  //   } catch (error) {
-  //     console.error(error.message);
-  //   }
-  // }
-
-  // async function deleteComment(id) {
-  //   try {
-  //     await fetch(`/api/comments/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
-  //     setUserComments(userComments.filter(comment => comment.comment_id !== id));
-  //   } catch (error) {
-  //     console.error(error.message);
-  //   }
-  // }
-
-  // async function editComment(id, text) {
-  //   try {
-  //     const response = await fetch(`/api/comments/${id}`, {
-  //       method: "PUT",
-  //       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-  //       body: JSON.stringify({ text })
-  //     });
-  //     if (response.ok) {
-  //       setUserComments(userComments.map(comment => comment.comment_id === id ? { ...comment, text } : comment));
-  //     }
-  //   } catch (error) {
-  //     console.error(error.message);
-  //   }
-  // }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -219,13 +171,22 @@ export const Dashboard = () => {
                     Delete Review{" "}
                   </button>
 
-                  {editReviewFormShown &&( 
+                  {editReviewFormShown && (
                     <>
-                    <input type="text" placeholder="Update your review here." value={newReviewText} onChange={(e)=>setNewReviewText(e.target.value)}/>
-                  <input type="Number" placeholder="New rating" value={newReviewRating} onChange={(e)=>setNewReviewRating(e.target.value)}/>
+                      <input
+                        type="text"
+                        placeholder="Update your review here."
+                        value={newReviewText}
+                        onChange={(e) => setNewReviewText(e.target.value)}
+                      />
+                      <input
+                        type="Number"
+                        placeholder="New rating"
+                        value={newReviewRating}
+                        onChange={(e) => setNewReviewRating(e.target.value)}
+                      />
                     </>
-                )
-              }
+                  )}
 
                   <button
                     onClick={() => setEditReviewFormShown(!editReviewFormShown)}
@@ -234,7 +195,9 @@ export const Dashboard = () => {
                     Edit Review{" "}
                   </button>
                   <button
-                    onClick={() => editReview(review.id, newReviewText, newReviewRating)}
+                    onClick={() =>
+                      editReview(review.id, newReviewText, newReviewRating)
+                    }
                   >
                     {" "}
                     Submit Updated Review{" "}
@@ -249,27 +212,15 @@ export const Dashboard = () => {
         {userComments.length === 0 ? (
           <>
             <p className="text-gray-500 text-center">No comments yet</p>
-
-            <button onClick={() => deleteComments(comment.id)}>
-              {" "}
-              Delete Comment{" "}
-            </button>
-
-            <button onClick={() => editComments(comment.id)}>
-              {" "}
-              Edit Comment{" "}
-            </button>
           </>
         ) : (
           <div className="space-y-4">
-            {userComments.slice(0, 3).map((comment) => (
+            {userComments.map((comment) => (
               <div
                 key={comment.id}
                 className="border p-4 rounded hover:bg-gray-50 transition-colors"
               >
-                {/* <h3 className="font-bold">{review.place_name}</h3> */}
-
-                <p>{review.review_content}</p>
+                <p>{comment.content}</p>
                 <button onClick={() => deleteComments(comment.id)}>
                   {" "}
                   Delete Comment{" "}
