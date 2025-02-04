@@ -12,6 +12,7 @@ const {
   seedPlaces,
   seedOperatingHours,
   seedReviews,
+  seedComments,
   seedPhotos,
   seedBookmarks
 } = require('./seedFunction');
@@ -41,6 +42,7 @@ const seed = async () => {
     await seedAdmins(db);
     await seedPlaces(db);
     await seedReviews(db);
+    await seedComments(db);
     await seedPhotos(db);
     await seedBookmarks(db);
     

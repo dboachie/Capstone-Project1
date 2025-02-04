@@ -10,7 +10,8 @@ function ReviewForm({ setReviewButtonClicked, token }) {
     e.preventDefault();
     // Handle submission logic here, e.g., send data to server
 
-    console.log("Review submitted:", { name, rating, comment });
+    //console.log("Review submitted:", { name, rating, comment });
+    console.log("Review submitted:", { title, rating, content });
     try {
       const response = await fetch("http://localhost:3000/api/reviews", {
         method: "POST",

@@ -2,15 +2,20 @@ import React, { useState, useEffect } from "react";
 import { MapPin, Star, Heart, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ReviewForm from "./Reviews";
+import ReviewCommentBox from "./Comments";
 
 export const Dashboard = () => {
   const [token, setToken] = useState(window.localStorage.getItem("token"));
-  console.log(token);
   const [reviewButtonClicked, setReviewButtonClicked] = useState(false);
+  const [newReviewText, setNewReviewText] = useState("");
+  const [newReviewRating, setNewReviewRating] = useState(null);
   const [userData, setUserData] = useState(null);
   const [userReviews, setUserReviews] = useState([]);
   const [favoriteLocations, setFavoriteLocations] = useState([]);
-
+  const [userComments, setUserComments] = useState([]);
+  const [editReviewFormShown, setEditReviewFormShown] = useState(false);
+  const [submitUpdatedReview, setSubmitUpdatedReviewn] = useState(false);
+  console.log(userComments);
   const navigate = useNavigate();
 
   //If token does not exist, navigate the user to the login page.
@@ -34,6 +39,13 @@ export const Dashboard = () => {
         const reviewsResponse = await fetch("/api/users/reviews", { headers });
         const reviewsData = await reviewsResponse.json();
         setUserReviews(reviewsData);
+
+        // Fetch user comments
+        const commentsResponse = await fetch("/api/users/comments", {
+          headers,
+        });
+        const commentsData = await commentsResponse.json();
+        setUserReviews(commentsData);
 
         // Fetch favorite locations
         const favoritesResponse = await fetch("/api/users/favorites", {
@@ -65,10 +77,16 @@ export const Dashboard = () => {
     }
   }
 
-  async function editReview(id, text, rating) {
+  async function editReview(id, content, rating) {
+    console.log(id);
     try {
       const response = await fetch(`http://localhost:3000/api/reviews/${id}`, {
         method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({content, rating}),
       });
       const result = await response.json();
       console.log(result);
@@ -78,6 +96,54 @@ export const Dashboard = () => {
       console.log(error.message);
     }
   }
+
+  // async function deleteReview(id) {
+  //   try {
+  //     await fetch(`/api/reviews/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+  //     setUserReviews(userReviews.filter(review => review.review_id !== id));
+  //   } catch (error) {
+  //     console.error(error.message);
+  //   }
+  // }
+
+  // async function editReview(id, text, rating) {
+  //   try {
+  //     const response = await fetch(`/api/reviews/${id}`, {
+  //       method: "PUT",
+  //       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+  //       body: JSON.stringify({ text, rating })
+  //     });
+  //     if (response.ok) {
+  //       setUserReviews(userReviews.map(review => review.review_id === id ? { ...review, review_content: text, rating } : review));
+  //     }
+  //   } catch (error) {
+  //     console.error(error.message);
+  //   }
+  // }
+
+  // async function deleteComment(id) {
+  //   try {
+  //     await fetch(`/api/comments/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+  //     setUserComments(userComments.filter(comment => comment.comment_id !== id));
+  //   } catch (error) {
+  //     console.error(error.message);
+  //   }
+  // }
+
+  // async function editComment(id, text) {
+  //   try {
+  //     const response = await fetch(`/api/comments/${id}`, {
+  //       method: "PUT",
+  //       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+  //       body: JSON.stringify({ text })
+  //     });
+  //     if (response.ok) {
+  //       setUserComments(userComments.map(comment => comment.comment_id === id ? { ...comment, text } : comment));
+  //     }
+  //   } catch (error) {
+  //     console.error(error.message);
+  //   }
+  // }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -101,6 +167,12 @@ export const Dashboard = () => {
 
             <p className="text-2xl font-bold">{userReviews.length}</p>
           </div>
+          {/* <div className="bg-white p-4 rounded shadow flex flex-col items-center">
+            <Star className="w-8 h-8 text-yellow-500 mb-2" />
+            <h3 className="font-bold text-gray-600">Comments Written</h3>
+
+            <p className="text-2xl font-bold">{userReviews.length}</p>
+          </div> */}
           <div className="bg-white p-4 rounded shadow flex flex-col items-center">
             <Heart className="w-8 h-8 text-red-500 mb-2" />
             <h3 className="font-bold text-gray-600">Favorite Locations</h3>
@@ -142,20 +214,75 @@ export const Dashboard = () => {
                     {review.rating} / 5
                   </div>
                   <p>{review.review_content}</p>
-                  <button onClick={() => deleteReview(review.review_id)}>
+                  <button onClick={() => deleteReview(review.id)}>
                     {" "}
                     Delete Review{" "}
                   </button>
 
-                  <button onClick={() => editReview(review.review_id)}>
+                  {editReviewFormShown &&( 
+                    <>
+                    <input type="text" placeholder="Update your review here." value={newReviewText} onChange={(e)=>setNewReviewText(e.target.value)}/>
+                  <input type="Number" placeholder="New rating" value={newReviewRating} onChange={(e)=>setNewReviewRating(e.target.value)}/>
+                    </>
+                )
+              }
+
+                  <button
+                    onClick={() => setEditReviewFormShown(!editReviewFormShown)}
+                  >
                     {" "}
                     Edit Review{" "}
+                  </button>
+                  <button
+                    onClick={() => editReview(review.id, newReviewText, newReviewRating)}
+                  >
+                    {" "}
+                    Submit Updated Review{" "}
                   </button>
                 </div>
               ))}
             </div>
           )}
         </div>
+        <h2 className="text-xl font-bold mb-4">My Comments</h2>
+
+        {userComments.length === 0 ? (
+          <>
+            <p className="text-gray-500 text-center">No comments yet</p>
+
+            <button onClick={() => deleteComments(comment.id)}>
+              {" "}
+              Delete Comment{" "}
+            </button>
+
+            <button onClick={() => editComments(comment.id)}>
+              {" "}
+              Edit Comment{" "}
+            </button>
+          </>
+        ) : (
+          <div className="space-y-4">
+            {userComments.slice(0, 3).map((comment) => (
+              <div
+                key={comment.id}
+                className="border p-4 rounded hover:bg-gray-50 transition-colors"
+              >
+                {/* <h3 className="font-bold">{review.place_name}</h3> */}
+
+                <p>{review.review_content}</p>
+                <button onClick={() => deleteComments(comment.id)}>
+                  {" "}
+                  Delete Comment{" "}
+                </button>
+
+                <button onClick={() => editComments(comment.id)}>
+                  {" "}
+                  Edit Comment{" "}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"></div>
 

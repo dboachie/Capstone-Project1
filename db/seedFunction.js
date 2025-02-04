@@ -7,6 +7,7 @@ const {
   admins,
   places,
   reviews,
+  comments,
   photos,
   bookmarks
 } = require('./data');
@@ -72,35 +73,35 @@ const seedCities = async (db) => {
 
 
 const seedUsers = async (db) => {
-    try {
-      const saltRounds = 10;
-      for (const user of users) {
-        const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-        await db.query(`
+  try {
+    const saltRounds = 10;
+    for (const user of users) {
+      const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+      await db.query(`
           INSERT INTO users (
             username, email, password_hash, full_name, country, role, is_verified, is_active
           )
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         `, [
-          user.username,
-          user.email,
-          hashedPassword,
-          user.full_name,
-          user.country,
-          user.role,
-          true,
-          true
-        ]);
-      }
-      console.log("Users seeded successfully.");
-    } catch (error) {
-      console.error("Error seeding users:", error);
-      throw error;
+        user.username,
+        user.email,
+        hashedPassword,
+        user.full_name,
+        user.country,
+        user.role,
+        true,
+        true
+      ]);
     }
-  };
+    console.log("Users seeded successfully.");
+  } catch (error) {
+    console.error("Error seeding users:", error);
+    throw error;
+  }
+};
 
-  const seedAdmins = async (db) => {
-    try {
+const seedAdmins = async (db) => {
+  try {
     for (const admin of admins) {
       await db.query(`
         INSERT INTO admins (
@@ -136,16 +137,16 @@ const seedUsers = async (db) => {
       ]);
     }
     console.log("Admins seeded successfully.");
-} catch (error) {
+  } catch (error) {
     console.error("Error seeding admins:", error);
     throw error;
   }
 };
 
 const seedPlaces = async (db) => {
-    try {
-          for (const place of places) {
-            const placeId = await db.query(`
+  try {
+    for (const place of places) {
+      const placeId = await db.query(`
               INSERT INTO places (
                 category_id, city_id, name, description, address,
                 latitude, longitude, website_url, phone_number, price_level,
@@ -175,65 +176,65 @@ const seedPlaces = async (db) => {
       await seedOperatingHours(db, placeId.rows[0].id, place.name);
     }
     console.log("Places seeded successfully.");
-} catch (error) {
+  } catch (error) {
     console.error("Error seeding places:", error);
     throw error;
   }
 };
 
 const seedOperatingHours = async (db, placeId, placeName) => {
-    try {
-      const customOperatingHours = {
-        'Le Petit Bistrot': {
-          1: { open: '11:30', close: '23:00', closed: false },
-          2: { open: '11:30', close: '23:00', closed: false },
-          3: { open: '11:30', close: '23:00', closed: false },
-          4: { open: '11:30', close: '23:30', closed: false },
-          5: { open: '11:30', close: '23:30', closed: false },
-          6: { open: '11:30', close: '23:30', closed: false },
-          0: { open: '12:00', close: '22:00', closed: false }
-        },
-        'Ocean View Seafood': {
-          1: { open: '12:00', close: '22:00', closed: false },
-          2: { open: '12:00', close: '22:00', closed: false },
-          3: { open: '12:00', close: '22:00', closed: false },
-          4: { open: '12:00', close: '23:00', closed: false },
-          5: { open: '12:00', close: '23:30', closed: false },
-          6: { open: '12:00', close: '23:30', closed: false },
-          0: { open: '12:00', close: '21:00', closed: false }
-        }
+  try {
+    const customOperatingHours = {
+      'Le Petit Bistrot': {
+        1: { open: '11:30', close: '23:00', closed: false },
+        2: { open: '11:30', close: '23:00', closed: false },
+        3: { open: '11:30', close: '23:00', closed: false },
+        4: { open: '11:30', close: '23:30', closed: false },
+        5: { open: '11:30', close: '23:30', closed: false },
+        6: { open: '11:30', close: '23:30', closed: false },
+        0: { open: '12:00', close: '22:00', closed: false }
+      },
+      'Ocean View Seafood': {
+        1: { open: '12:00', close: '22:00', closed: false },
+        2: { open: '12:00', close: '22:00', closed: false },
+        3: { open: '12:00', close: '22:00', closed: false },
+        4: { open: '12:00', close: '23:00', closed: false },
+        5: { open: '12:00', close: '23:30', closed: false },
+        6: { open: '12:00', close: '23:30', closed: false },
+        0: { open: '12:00', close: '21:00', closed: false }
+      }
     };
 
     const customHours = customOperatingHours[placeName];
 
     for (let day = 0; day < 7; day++) {
-        const hours = customHours ? customHours[day] : {
-          open: '09:00',
-          close: '22:00',
-          closed: day === 0
-        };
-  
-        await db.query(`
+      const hours = customHours ? customHours[day] : {
+        open: '09:00',
+        close: '22:00',
+        closed: day === 0
+      };
+
+      await db.query(`
           INSERT INTO operating_hours (place_id, day_of_week, open_time, close_time, is_closed)
           VALUES ($1, $2, $3, $4, $5)
         `, [
-          placeId,
-          day,
-          hours.open,
-          hours.close,
-          hours.closed
-        ]);
-      }
-    } catch (error) {
-      console.error("Error seeding operating hours:", error);
-      throw error;
+        placeId,
+        day,
+        hours.open,
+        hours.close,
+        hours.closed
+      ]);
     }
-  };
+  } catch (error) {
+    console.error("Error seeding operating hours:", error);
+    throw error;
+  }
+};
 
-  const seedReviews = async (db) => {
-    try {
-      for (const review of reviews) {
-        const reviewId = await db.query(`
+const seedReviews = async (db) => {
+  try {
+    for (const review of reviews) {
+      const reviewId = await db.query(`
             INSERT INTO reviews (
             user_id,
             place_id,
@@ -249,14 +250,14 @@ const seedOperatingHours = async (db, placeId, placeName) => {
              )
             RETURNING id
             `, [
-                review.username,
-                 review.place_name,
-                 review.rating,
-                 review.title,
-                 review.content,
-                  review.visit_date
-                ]);
-                await db.query(`
+        review.username,
+        review.place_name,
+        review.rating,
+        review.title,
+        review.content,
+        review.visit_date
+      ]);
+      await db.query(`
                      UPDATE places
                       SET 
                        average_rating = (
@@ -271,18 +272,47 @@ const seedOperatingHours = async (db, placeId, placeName) => {
                            )
                            WHERE name = $1
                            `, [review.place_name]);
-                        }
-                        console.log("Reviews seeded successfully.");
-                      } catch (error) {
-                        console.error("Error seeding reviews:", error);
-                        throw error;
-                      }
-                    };
+    }
+    console.log("Reviews seeded successfully.");
+  } catch (error) {
+    console.error("Error seeding reviews:", error);
+    throw error;
+  }
+};
 
- const seedPhotos = async (db) => {
+
+
+const seedComments = async (db) => {
   try {
-    for (const photo of photos) {                   
-await db.query(`
+    for (const comment of comments) {
+      await db.query(`
+                              INSERT INTO comments (
+                              user_id,
+                              review_id,
+                              content
+                              )
+                              VALUES (
+                              $1,$2,$3
+                               )
+                              RETURNING id
+                              `, [
+        comment.user_id,
+        comment.review_id,
+        comment.content
+      ]);
+
+    }
+    console.log("Comments seeded successfully.");
+  } catch (error) {
+    console.error("Error seeding comments:", error);
+    throw error;
+  }
+};
+
+const seedPhotos = async (db) => {
+  try {
+    for (const photo of photos) {
+      await db.query(`
   INSERT INTO photos (
     user_id,
     place_id,
@@ -297,27 +327,27 @@ await db.query(`
     $3, $4, $5, $6
   )
 `, [
-  photo.username,
-  photo.place_name,
-  photo.photo_url,
-  photo.thumbnail_url,
-  photo.caption,
-  photo.metadata
-]);
-}
-console.log("Photos seeded successfully.");
-} catch (error) {
-console.error("Error seeding photos:", error);
-throw error;
-}
+        photo.username,
+        photo.place_name,
+        photo.photo_url,
+        photo.thumbnail_url,
+        photo.caption,
+        photo.metadata
+      ]);
+    }
+    console.log("Photos seeded successfully.");
+  } catch (error) {
+    console.error("Error seeding photos:", error);
+    throw error;
+  }
 };
 
-                    
+
 
 const seedBookmarks = async (db) => {
-    try {
-      for (const bookmark of bookmarks) {
-    await db.query(`
+  try {
+    for (const bookmark of bookmarks) {
+      await db.query(`
       INSERT INTO bookmarks (
         user_id,
         place_id,
@@ -330,52 +360,54 @@ const seedBookmarks = async (db) => {
         $3, $4
       )
     `, [
-      bookmark.username,
-      bookmark.place_name,
-      bookmark.collection_name,
-      bookmark.notes
-    ]);
-}
-console.log("Bookmarks seeded successfully.");
-} catch (error) {
-console.error("Error seeding bookmarks:", error);
-throw error;
-}
+        bookmark.username,
+        bookmark.place_name,
+        bookmark.collection_name,
+        bookmark.notes
+      ]);
+    }
+    console.log("Bookmarks seeded successfully.");
+  } catch (error) {
+    console.error("Error seeding bookmarks:", error);
+    throw error;
+  }
 };
 
 
 
 const seed = async () => {
-try {
-  console.log("Starting database seeding...");
-  
-  await seedCategories();
-  await seedCountries();
-  await seedCities();
-  await seedUsers();
-  await seedAdmins();
-  await seedPlaces();
-  await seedReviews();
-  await seedPhotos();
-  await seedBookmarks();
-  
-  console.log("Database seeding completed successfully!");
-} catch (error) {
-  console.error("Error seeding database:", error);
-  throw error;
-}
+  try {
+    console.log("Starting database seeding...");
+
+    await seedCategories();
+    await seedCountries();
+    await seedCities();
+    await seedUsers();
+    await seedAdmins();
+    await seedPlaces();
+    await seedReviews();
+    await seedComments();
+    await seedPhotos();
+    await seedBookmarks();
+
+    console.log("Database seeding completed successfully!");
+  } catch (error) {
+    console.error("Error seeding database:", error);
+    throw error;
+  }
 };
 
 module.exports = {
-seed,
-seedCategories,
-seedCountries,
-seedCities,
-seedUsers,
-seedAdmins,
-seedPlaces,
-seedOperatingHours,
-seedReviews,
-seedPhotos,
-seedBookmarks
+  seed,
+  seedCategories,
+  seedCountries,
+  seedCities,
+  seedUsers,
+  seedAdmins,
+  seedPlaces,
+  seedOperatingHours,
+  seedReviews,
+  seedComments,
+  seedPhotos,
+  seedBookmarks
 }

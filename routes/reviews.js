@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../config/db');
 const { authenticateToken } = require('../middleware/auth');
 
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, async (req, res, next) => {
   try {
     const { rating, title, content, visit_date } = req.body;
     console.log(req.body)
@@ -25,15 +25,15 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 });
 
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res, next) => {
   try {
-    const { rating, title, content } = req.body;
+    const { rating, content } = req.body;
     const result = await pool.query(
       `UPDATE reviews 
-       SET rating = $1, title = $2, content = $3, updated_at = CURRENT_TIMESTAMP
-       WHERE id = $4 AND user_id = $5
+       SET rating = $1, content = $2, updated_at = CURRENT_TIMESTAMP
+       WHERE id = $3 AND user_id = $4
        RETURNING *`,
-      [rating, title, content, req.params.id, req.user.id]
+      [rating, content, req.params.id, req.user.id]
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Review not found or unauthorized' });
@@ -44,7 +44,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
   }
 });
 
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res, next) => {
   try {
     const result = await pool.query(
       'DELETE FROM reviews WHERE id = $1 AND user_id = $2 RETURNING *',
