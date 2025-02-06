@@ -4,6 +4,7 @@ import ReviewForm from "./Reviews";
 export const AdminDashboard = () => {
   const [reviewButtonClicked, setReviewButtonClicked] = useState(false);
   const [stats, setStats] = useState(null);
+  //const [adminData, setAdminData] = useState(null);
   const [pendingReviews, setPendingReviews] = useState([]);
   const token = window.localStorage.getItem("token");
 
@@ -32,26 +33,26 @@ export const AdminDashboard = () => {
     fetchAdminData();
   }, [token]);
 
-  const handleReviewAction = async (reviewId, action) => {
-    try {
-      await fetch(`/api/admin/reviews/${reviewId}/status`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status: action }),
-      });
+  // const handleReviewAction = async (reviewId, action) => {
+  //   try {
+  //     await fetch(`/api/admin/reviews/${reviewId}/status`, {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify({ status: action }),
+  //     });
 
-      const response = await fetch("/api/admin/reviews/pending", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      setPendingReviews(data);
-    } catch (error) {
-      console.error("Error updating review:", error);
-    }
-  };
+  //     const response = await fetch("/api/admin/reviews/pending", {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     const data = await response.json();
+  //     setPendingReviews(data);
+  //   } catch (error) {
+  //     console.error("Error updating review:", error);
+  //   }
+  // };
 
   console.log(stats);
   return (
@@ -95,24 +96,7 @@ export const AdminDashboard = () => {
                     </p>
                     <p className="mt-2">{review.review_content}</p>
                   </div>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() =>
-                        handleReviewAction(review.review_id, "approved")
-                      }
-                      className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleReviewAction(review.review_id, "rejected")
-                      }
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      Reject
-                    </button>
-                  </div>
+                  <div className="flex space-x-2"></div>
                 </div>
               </div>
             ))}

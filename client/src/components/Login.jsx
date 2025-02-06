@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
-export const Login = () => {
+export const Login = ({ login, isAdmin, error }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login, error: authError } = useAuth();
+  //const { login, error: authError, auth, isAdmin } = useAuth();
   const navigate = useNavigate();
+  let authError;
+  if (error) {
+    authError = error;
+  }
 
   const handleSubmit = async (ev) => {
     ev.preventDefault();
@@ -15,7 +19,12 @@ export const Login = () => {
 
     try {
       await login({ email, password });
-      navigate("/dashboard");
+      console.log("logging in");
+      //console.log(auth.user);
+      console.log("loginAdmin", isAdmin);
+      const path = isAdmin ? "/admin" : "/dashboard";
+
+      navigate(path);
     } catch (err) {
       console.error(err);
     } finally {

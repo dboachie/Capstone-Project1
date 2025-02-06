@@ -14,13 +14,8 @@ export const Navigation = ({ auth, isAdmin, logout, onSearch }) => {
               onClick={() => navigate("/")}
               className="text-2xl font-bold text-blue-600"
             >
-              Travel Review
+              Home
             </button>
-          </div>
-
-          {/* Search */}
-          <div className="flex-grow max-w-2xl">
-            <SearchBar onSearch={onSearch} />
           </div>
 
           {/* Auth Buttons */}
@@ -30,6 +25,7 @@ export const Navigation = ({ auth, isAdmin, logout, onSearch }) => {
                 <span className="text-gray-600">
                   Welcome, {auth.user.username}
                 </span>
+
                 {isAdmin && (
                   <button
                     onClick={() => navigate("/admin")}
