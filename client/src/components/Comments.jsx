@@ -7,15 +7,16 @@ function ReviewCommentBox() {
     setComment(event.target.value);
   };
 
- // const handleSubmit = (event) => {
-   // event.preventDefault();
-    // Here you would typically send the comment to your backend for storage
-   // console.log("Submitted comment:", comment);
-  
+  // const handleSubmit = (event) => {
+  // event.preventDefault();
+  // Here you would typically send the comment to your backend for storage
+  // console.log("Submitted comment:", comment);
+
   //};
 
-  const handleSubmit = async (e, title, rating, visit_date, content) => {
+  const handleSubmit = async (event, content, review_id) => {
     //Prevents page from refreshing
+    event.preventDefault();
     try {
       const response = await fetch("http://localhost:3000/api/comments", {
         method: "POST",
@@ -23,16 +24,15 @@ function ReviewCommentBox() {
           "content-type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ comment }),
+        body: JSON.stringify({ content, review_id }),
       });
       console.log(response);
       setComment("");
-    } catch {
-      throw new Error("An error");
+    } catch (err) {
+      console.log(err);
     }
-    setReviewButtonClicked(false);
+
   };
-  
 
   return (
     <div>

@@ -106,6 +106,45 @@ export const Dashboard = () => {
     }
   }
 
+  async function deleteComments(id) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/comments/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+      setUserReviews((prevComments) =>
+        prevComments.filter((comment) => comment.id !== id)
+      );
+
+      console.log(result);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  async function editComment(id, content, rating) {
+    console.log(id);
+    try {
+      const response = await fetch(`http://localhost:3000/api/comment/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ content, rating }),
+      });
+      const result = await response.json();
+      console.log(result);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">User Dashboard</h1>
@@ -169,12 +208,12 @@ export const Dashboard = () => {
                   key={review.review_id}
                   className="border p-4 rounded hover:bg-gray-50 transition-colors"
                 >
-                  <h3 className="font-bold">{review.place_name}</h3>
+                  <h3 className="font-bold">{review.title}</h3>
                   <div className="flex items-center text-sm text-gray-600 mb-2">
                     <Star className="w-4 h-4 mr-1 text-yellow-500" />
                     {review.rating} / 5
                   </div>
-                  <p>{review.review_content}</p>
+                  <p>{review.content}</p>
                   <button onClick={() => deleteReview(review.id)}>
                     {" "}
                     Delete Review{" "}

@@ -29,14 +29,14 @@ router.get('/', authenticateToken, async (req, res) => {
 
 router.post('/', authenticateToken, async (req, res, next) => {
   try {
-    const { rcomment } = req.body;
+    const { review_id, content } = req.body;
     console.log(req.body)
 
     const result = await pool.query(
-      `INSERT INTO comments (user_id, comment)
-       VALUES ($1, $2)
+      `INSERT INTO comments (user_id, review_id, content)
+       VALUES ($1, $2, $3)
        RETURNING *`,
-      [req.user.id, comments]
+      [req.user.id, review_id, content]
     );
 
     res.status(201).json(result.rows[0]);
