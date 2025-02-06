@@ -27,6 +27,28 @@ router.get('/', authenticateToken, async (req, res) => {
   }
 });
 
+router.post('/', authenticateToken, async (req, res, next) => {
+  try {
+    const { rcomment } = req.body;
+    console.log(req.body)
+
+    const result = await pool.query(
+      `INSERT INTO comments (user_id, comment)
+       VALUES ($1, $2)
+       RETURNING *`,
+      [req.user.id, comments]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(400).json({ error: 'You have already commented this place' });
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { content } = req.body;

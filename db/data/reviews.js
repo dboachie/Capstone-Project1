@@ -7,6 +7,7 @@ exports.reviews = [
     content: 'The atmosphere was sophisticated and the food was exceptional. Highly recommended for special occasions.',
     visit_date: '2024-01-15'
   },
+
   {
     username: 'janedoe',
     place_name: 'Metropolitan Museum',

@@ -3,6 +3,24 @@ const router = express.Router();
 const pool = require('../config/db');
 const { authenticateToken } = require('../middleware/auth');
 
+
+router.get('/', authenticateToken, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+
+      `SELECT * FROM reviews
+      WHERE user_id = $1
+      `, [req.user.id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+
 router.post('/', authenticateToken, async (req, res, next) => {
   try {
     const { rating, title, content, visit_date } = req.body;
@@ -50,6 +68,7 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
       'DELETE FROM reviews WHERE id = $1 AND user_id = $2 RETURNING *',
       [req.params.id, req.user.id]
     );
+    console.log(result);
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Review not found or unauthorized' });
     }

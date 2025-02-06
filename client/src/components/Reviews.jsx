@@ -4,8 +4,9 @@ function ReviewForm({ setReviewButtonClicked, token }) {
   const [title, setTitle] = useState("");
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState("");
+  const [visitDate, setVisitDate] = useState("");
 
-  const handleSubmit = async (e, title, rating, content) => {
+  const handleSubmit = async (e, title, rating, visit_date, content) => {
     //Prevents page from refreshing
     e.preventDefault();
     // Handle submission logic here, e.g., send data to server
@@ -18,7 +19,7 @@ function ReviewForm({ setReviewButtonClicked, token }) {
           "content-type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title, rating, content }),
+        body: JSON.stringify({ title, rating, visit_date, content }),
       });
       console.log(response);
     } catch {
@@ -28,7 +29,7 @@ function ReviewForm({ setReviewButtonClicked, token }) {
   };
 
   return (
-    <form onSubmit={(e) => handleSubmit(e, title, rating, content)}>
+    <form onSubmit={(e) => handleSubmit(e, title, rating, visitDate, content)}>
       <div>
         <label htmlFor="name">Name:</label>
         <input
@@ -53,6 +54,20 @@ function ReviewForm({ setReviewButtonClicked, token }) {
           <option value={5}>5</option>
         </select>
       </div>
+
+      <div>
+        <label className="block text-lg font-semibold mb-2" htmlFor="date">
+          Select a Date:
+        </label>
+        <input
+          type="date"
+          id="date"
+          value={visitDate}
+          onChange={(e) => setVisitDate(e.target.value)}
+          className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
       <div>
         <label htmlFor="content">Content:</label>
         <textarea

@@ -16,7 +16,7 @@ export const Dashboard = () => {
   const [userComments, setUserComments] = useState([]);
   const [editReviewFormShown, setEditReviewFormShown] = useState(false);
   const [submitUpdatedReview, setSubmitUpdatedReview] = useState(false);
-  console.log(userComments);
+  console.log(userReviews);
   const navigate = useNavigate();
 
   //If token does not exist, navigate the user to the login page.
@@ -37,8 +37,11 @@ export const Dashboard = () => {
         setUserData(profileData);
 
         // Fetch user reviews
-        const reviewsResponse = await fetch("/api/users/reviews", { headers });
+
+        const reviewsResponse = await fetch("/api/reviews", { headers });
+
         const reviewsData = await reviewsResponse.json();
+        console.log(reviewsData);
         setUserReviews(reviewsData);
 
         // Fetch user comments
@@ -68,14 +71,20 @@ export const Dashboard = () => {
     try {
       const response = await fetch(`http://localhost:3000/api/reviews/${id}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
+
       const result = await response.json();
+      setUserReviews((prevReviews) =>
+        prevReviews.filter((review) => review.id !== id)
+      );
 
       console.log(result);
     } catch (error) {
       console.log(error.message);
-
-      //Find why token is not showing up
     }
   }
 
@@ -208,6 +217,7 @@ export const Dashboard = () => {
           )}
         </div>
         <h2 className="text-xl font-bold mb-4">My Comments</h2>
+        <ReviewCommentBox></ReviewCommentBox>
 
         {userComments.length === 0 ? (
           <>
