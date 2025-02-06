@@ -9,7 +9,8 @@ export const Dashboard = () => {
   const [reviewButtonClicked, setReviewButtonClicked] = useState(false);
   const [newReviewText, setNewReviewText] = useState("");
   const [newReviewRating, setNewReviewRating] = useState(null);
-  //const [newCommentText, setNewCommentText] = useState("");
+  const [newCommentText, setNewCommentText] = useState("");
+  const [showEditComment, setShowEditComment] = useState(false);
   const [userData, setUserData] = useState(null);
   const [userReviews, setUserReviews] = useState([]);
   const [favoriteLocations, setFavoriteLocations] = useState([]);
@@ -115,28 +116,21 @@ export const Dashboard = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      const result = await response.json();
-      setUserReviews((prevComments) =>
-        prevComments.filter((comment) => comment.id !== id)
-      );
-
-      console.log(result);
     } catch (error) {
       console.log(error.message);
     }
   }
 
-  async function editComment(id, content, rating) {
+  async function updateComment(id, content) {
     console.log(id);
     try {
-      const response = await fetch(`http://localhost:3000/api/comment/${id}`, {
+      const response = await fetch(`http://localhost:3000/api/comments/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ content, rating }),
+        body: JSON.stringify({ content }),
       });
       const result = await response.json();
       console.log(result);
@@ -250,13 +244,14 @@ export const Dashboard = () => {
                     {" "}
                     Submit Updated Review{" "}
                   </button>
+                  <ReviewCommentBox review={review}> </ReviewCommentBox>
                 </div>
               ))}
             </div>
           )}
         </div>
         <h2 className="text-xl font-bold mb-4">My Comments</h2>
-        <ReviewCommentBox></ReviewCommentBox>
+        {/* <ReviewCommentBox></ReviewCommentBox> */}
 
         {userComments.length === 0 ? (
           <>
@@ -275,10 +270,25 @@ export const Dashboard = () => {
                   Delete Comment{" "}
                 </button>
 
-                <button onClick={() => editComments(comment.id)}>
+                <button onClick={() => setShowEditComment(!showEditComment)}>
                   {" "}
                   Edit Comment{" "}
                 </button>
+                {showEditComment && (
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Edit comment for a review."
+                      value={newCommentText}
+                      onChange={(e) => setNewCommentText(e.target.value)}
+                    ></input>
+                    <button
+                      onClick={() => updateComment(comment.id, newCommentText)}
+                    >
+                      Submit Updated Comment
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

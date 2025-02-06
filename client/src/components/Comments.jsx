@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 
-function ReviewCommentBox() {
+function ReviewCommentBox({ review }) {
   const [comment, setComment] = useState("");
+  const token = localStorage.getItem("token");
+  const [content, setContent] = useState("");
 
   const handleInputChange = (event) => {
-    setComment(event.target.value);
+    setContent(event.target.value);
   };
 
   // const handleSubmit = (event) => {
@@ -16,6 +18,8 @@ function ReviewCommentBox() {
 
   const handleSubmit = async (event, content, review_id) => {
     //Prevents page from refreshing
+    console.log(content);
+    console.log(review.id);
     event.preventDefault();
     try {
       const response = await fetch("http://localhost:3000/api/comments", {
@@ -24,21 +28,21 @@ function ReviewCommentBox() {
           "content-type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ content, review_id }),
+        body: JSON.stringify({ content, review_id: review.id }),
       });
       console.log(response);
       setComment("");
     } catch (err) {
       console.log(err);
     }
-
   };
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={(e) => handleSubmit(e, content, review.id)}>
         <textarea
-          value={comment}
+          type="text"
+          value={content}
           onChange={handleInputChange}
           placeholder="Write your comment for a review here..."
         />
